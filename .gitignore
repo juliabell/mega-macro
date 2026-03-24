@@ -1,4 +1,14 @@
+# macOS
 .DS_Store
+
+# Backup/temp files
 *.bak
 *.patch
 .~lock.*
+
+# Sensitive research files (keep local only)
+macro_analyst_tracker.xlsx
+signal_dashboard.html
+Sources/
+*.md
+!README.md
