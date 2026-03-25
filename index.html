@@ -3,2013 +3,571 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Macro Signal Dashboard v2</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='1' x2='1' y2='0'%3E%3Cstop offset='0%25' stop-color='%2358a6ff'/%3E%3Cstop offset='100%25' stop-color='%23bc8cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='6' fill='%230f1117'/%3E%3Crect x='4' y='18' width='5' height='10' rx='1.5' fill='url(%23g)' opacity='0.7'/%3E%3Crect x='11' y='12' width='5' height='16' rx='1.5' fill='url(%23g)' opacity='0.85'/%3E%3Crect x='18' y='6' width='5' height='22' rx='1.5' fill='url(%23g)'/%3E%3Cpath d='M5 16 L13 10 L20 5' stroke='%23bc8cff' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='5' cy='16' r='1.5' fill='%23bc8cff'/%3E%3Ccircle cx='13' cy='10' r='1.5' fill='%23bc8cff'/%3E%3Ccircle cx='20' cy='5' r='1.5' fill='%23bc8cff'/%3E%3Cpath d='M25 8 L28 5 L28 8' stroke='%233fb950' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<title>Macro Signal Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='1' x2='1' y2='0'><stop offset='0%25' stop-color='%2358a6ff'/><stop offset='100%25' stop-color='%23bc8cff'/></linearGradient></defs><rect width='100' height='100' rx='20' fill='%230f1117'/><polyline points='10,70 30,55 50,65 70,35 90,25' fill='none' stroke='url(%23g)' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/><circle cx='90' cy='25' r='6' fill='%23bc8cff'/></svg>">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e1e4e8; min-height: 100vh; padding: 24px; }
-
-  /* Header */
-  .header { text-align: center; margin-bottom: 24px; }
+  .header { text-align: center; margin-bottom: 32px; }
   .header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #58a6ff, #bc8cff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .header .subtitle { color: #8b949e; font-size: 14px; margin-top: 4px; }
   .header .updated { color: #6e7681; font-size: 12px; margin-top: 8px; }
-
-  /* Timeframe Legend */
-  .tf-legend { display: flex; justify-content: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap; }
-  .tf-legend-item { display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px 14px; }
-  .tf-legend-item .tf-pill { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.5px; }
-  .tf-pill-st { background: rgba(88,166,255,0.2); color: #58a6ff; }
-  .tf-pill-mt { background: rgba(188,140,255,0.2); color: #bc8cff; }
-  .tf-pill-lt { background: rgba(63,185,80,0.2); color: #3fb950; }
-  .tf-pill-sec { background: rgba(210,153,34,0.2); color: #d29922; }
-  .tf-legend-item .tf-desc { font-size: 12px; color: #8b949e; }
-
-  /* Tabs */
-  .tabs { display: flex; gap: 4px; margin-bottom: 24px; max-width: 1600px; margin-left: auto; margin-right: auto; border-bottom: 1px solid #30363d; padding-bottom: 0; }
-  .tab { padding: 10px 20px; font-size: 14px; font-weight: 500; color: #8b949e; cursor: pointer; border: 1px solid transparent; border-bottom: 2px solid transparent; border-radius: 8px 8px 0 0; transition: all 0.2s; background: none; }
-  .tab:hover { color: #c9d1d9; background: #161b22; }
-  .tab.active { color: #e1e4e8; border-color: #30363d; border-bottom-color: #58a6ff; background: #161b22; }
-  .tab-content { display: none; max-width: 1600px; margin: 0 auto; }
-  .tab-content.active { display: block; }
-
-  /* Stats Row */
-  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
-  .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 14px; text-align: center; }
-  .stat-value { font-size: 28px; font-weight: 700; }
-  .stat-label { font-size: 11px; color: #8b949e; margin-top: 4px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 16px; max-width: 1600px; margin: 0 auto; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
+  .card:hover { border-color: #58a6ff; }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .card-title { font-size: 16px; font-weight: 600; }
+  .signal-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .signal-bullish { background: rgba(35, 134, 54, 0.2); color: #3fb950; border: 1px solid rgba(35, 134, 54, 0.4); }
+  .signal-bearish { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid rgba(218, 54, 51, 0.4); }
+  .signal-neutral { background: rgba(136, 136, 136, 0.2); color: #8b949e; border: 1px solid rgba(136, 136, 136, 0.3); }
+  .signal-mixed { background: rgba(210, 153, 34, 0.2); color: #d29922; border: 1px solid rgba(210, 153, 34, 0.4); }
+  .consensus-bar { height: 8px; background: #21262d; border-radius: 4px; margin: 8px 0 16px; overflow: hidden; position: relative; }
+  .consensus-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .fill-bullish { background: linear-gradient(90deg, #238636, #3fb950); }
+  .fill-bearish { background: linear-gradient(90deg, #da3633, #f85149); }
+  .fill-neutral { background: linear-gradient(90deg, #484f58, #6e7681); }
+  .analysts { display: flex; flex-direction: column; gap: 10px; }
+  .analyst-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 12px; background: #0d1117; border-radius: 8px; }
+  .analyst-name { font-size: 13px; color: #c9d1d9; font-weight: 500; min-width: 110px; padding-top: 2px; flex-shrink: 0; }
+  .analyst-view { display: flex; align-items: flex-start; gap: 8px; flex: 1; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .dot-bull { background: #3fb950; }
+  .dot-bear { background: #f85149; }
+  .dot-neutral { background: #6e7681; }
+  .view-text { font-size: 12px; color: #8b949e; line-height: 1.4; }
+  .conviction { font-size: 11px; color: #6e7681; }
+  .summary-section { max-width: 1600px; margin: 32px auto 0; }
+  .summary-section h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; color: #c9d1d9; }
+  .agree-table { width: 100%; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; border: 1px solid #30363d; }
+  .agree-table th { background: #21262d; padding: 12px 16px; text-align: left; font-size: 13px; color: #8b949e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .agree-table td { padding: 12px 16px; border-top: 1px solid #21262d; font-size: 13px; vertical-align: top; }
+  .agree-icon { font-size: 16px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; max-width: 1600px; margin-left: auto; margin-right: auto; margin-bottom: 32px; }
+  .stat-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px; text-align: center; }
+  .stat-value { font-size: 32px; font-weight: 700; }
+  .stat-label { font-size: 12px; color: #8b949e; margin-top: 4px; }
   .val-green { color: #3fb950; }
   .val-red { color: #f85149; }
   .val-yellow { color: #d29922; }
   .val-blue { color: #58a6ff; }
-
-  /* Timeframe Matrix */
-  .matrix-table { width: 100%; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; border: 1px solid #30363d; margin-bottom: 24px; }
-  .matrix-table th { background: #21262d; padding: 10px 14px; text-align: center; font-size: 12px; color: #8b949e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .matrix-table th:first-child { text-align: left; min-width: 160px; }
-  .matrix-table td { padding: 10px 14px; border-top: 1px solid #21262d; font-size: 13px; text-align: center; vertical-align: middle; }
-  .matrix-table td:first-child { text-align: left; font-weight: 500; color: #c9d1d9; }
-  .matrix-table tr:hover { background: #1c2128; }
-  .matrix-table .group-header td { background: #1a1f2b; font-weight: 600; color: #8b949e; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-top: 2px solid #30363d; }
-
-  /* Signal dots in matrix */
-  .sig { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 14px; }
-  .sig-bull { background: rgba(35,134,54,0.25); }
-  .sig-bear { background: rgba(218,54,51,0.25); }
-  .sig-neutral { background: rgba(136,136,136,0.15); }
-  .sig-none { }
-
-  /* Consensus cell with tooltip */
-  .consensus-cell { position: relative; cursor: default; }
-  .consensus-cell .analyst-dots { display: flex; gap: 2px; justify-content: center; margin-top: 4px; }
-  .consensus-cell .adot { width: 14px; height: 14px; border-radius: 3px; font-size: 9px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
-  .adot-bull { background: rgba(35,134,54,0.3); color: #3fb950; }
-  .adot-bear { background: rgba(218,54,51,0.3); color: #f85149; }
-  .adot-neutral { background: rgba(72,79,88,0.3); color: #6e7681; }
-  .adot-none { background: transparent; color: #30363d; }
-
-  /* Tooltip */
-  .consensus-cell .tooltip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #21262d; border: 1px solid #484f58; border-radius: 8px; padding: 10px 12px; font-size: 11px; line-height: 1.5; color: #c9d1d9; white-space: nowrap; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-  .consensus-cell:hover .tooltip { display: block; }
-  .tooltip .t-row { display: flex; gap: 6px; align-items: center; }
-  .tooltip .t-name { color: #8b949e; min-width: 80px; }
-  .tooltip .t-call { font-weight: 500; }
-
-  /* Asset cards (detail view in tabs) */
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 16px; }
-  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
-  .card:hover { border-color: #58a6ff; }
-  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .card-title { font-size: 16px; font-weight: 600; }
-  .signal-badge { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .signal-bullish { background: rgba(35,134,54,0.2); color: #3fb950; border: 1px solid rgba(35,134,54,0.4); }
-  .signal-bearish { background: rgba(218,54,51,0.2); color: #f85149; border: 1px solid rgba(218,54,51,0.4); }
-  .signal-neutral { background: rgba(136,136,136,0.2); color: #8b949e; border: 1px solid rgba(136,136,136,0.3); }
-  .signal-mixed { background: rgba(210,153,34,0.2); color: #d29922; border: 1px solid rgba(210,153,34,0.4); }
-
-  /* Timeframe sections inside cards */
-  .tf-section { margin-bottom: 12px; }
-  .tf-section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #21262d; }
-  .tf-section-header .tf-pill { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
-  .tf-section-header .tf-label { font-size: 12px; color: #6e7681; }
-
-  .analysts { display: flex; flex-direction: column; gap: 6px; }
-  .analyst-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 6px 10px; background: #0d1117; border-radius: 6px; }
-  .analyst-name { font-size: 12px; color: #c9d1d9; font-weight: 500; min-width: 100px; padding-top: 2px; flex-shrink: 0; }
-  .analyst-view { display: flex; align-items: flex-start; gap: 6px; flex: 1; }
-  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-  /* Signal type: VIEW = open circle (outline only) */
-  .dot-bull.st-view { background: transparent; border: 2px solid #3fb950; }
-  .dot-bear.st-view { background: transparent; border: 2px solid #f85149; }
-  .dot-neutral.st-view { background: transparent; border: 2px solid #6e7681; }
-  /* Signal type: POSITION = half-filled (gradient trick) */
-  .dot-bull.st-pos { background: linear-gradient(to top, #3fb950 50%, transparent 50%); border: 2px solid #3fb950; }
-  .dot-bear.st-pos { background: linear-gradient(to top, #f85149 50%, transparent 50%); border: 2px solid #f85149; }
-  .dot-neutral.st-pos { background: linear-gradient(to top, #6e7681 50%, transparent 50%); border: 2px solid #6e7681; }
-  /* Signal type: TRADE = solid filled */
-  .dot-bull.st-trade { background: #3fb950; border: 2px solid #3fb950; }
-  .dot-bear.st-trade { background: #f85149; border: 2px solid #f85149; }
-  .dot-neutral.st-trade { background: #6e7681; border: 2px solid #6e7681; }
-  /* Fallback for dots without signal type */
-  .dot-bull { background: #3fb950; }
-  .dot-bear { background: #f85149; }
-  .dot-neutral { background: #6e7681; }
-  .view-text { font-size: 11px; color: #8b949e; line-height: 1.4; }
-  /* Signal type inline tag */
-  .st-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; padding: 1px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
-  .st-tag-view { background: rgba(139,148,158,0.15); color: #8b949e; border: 1px solid rgba(139,148,158,0.3); }
-  .st-tag-pos { background: rgba(188,140,255,0.15); color: #bc8cff; border: 1px solid rgba(188,140,255,0.3); }
-  .st-tag-trade { background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); }
-  .new-badge { display: inline-block; background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); border-radius: 10px; font-size: 9px; font-weight: 600; padding: 1px 6px; margin-left: 4px; vertical-align: middle; letter-spacing: 0.5px; }
-
-  /* Recent changes section */
-  .recent-changes { margin-bottom: 24px; }
-  .recent-changes h2 { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9; }
-  .change-item { display: flex; gap: 12px; align-items: flex-start; padding: 10px 14px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; margin-bottom: 8px; }
-  .change-item:hover { border-color: #484f58; }
-  .change-date { font-size: 11px; font-weight: 600; color: #58a6ff; min-width: 52px; flex-shrink: 0; padding-top: 2px; }
-  .change-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .change-asset { font-size: 12px; font-weight: 600; color: #c9d1d9; }
-  .change-analyst { font-size: 11px; color: #8b949e; }
-  .change-desc { font-size: 12px; color: #8b949e; line-height: 1.4; margin-top: 2px; }
-  .change-arrow { font-size: 12px; color: #6e7681; }
-  .change-old { font-size: 11px; color: #6e7681; text-decoration: line-through; }
-  .change-new { font-size: 11px; font-weight: 500; }
-  .change-new-bull { color: #3fb950; }
-  .change-new-bear { color: #f85149; }
-  .change-new-neutral { color: #8b949e; }
-
-  /* Summary consensus table */
-  .summary-section { margin-top: 24px; }
-  .summary-section h2 { font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9; }
-  .agree-table { width: 100%; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; border: 1px solid #30363d; }
-  .agree-table th { background: #21262d; padding: 10px 14px; text-align: left; font-size: 12px; color: #8b949e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .agree-table td { padding: 10px 14px; border-top: 1px solid #21262d; font-size: 12px; vertical-align: top; }
-
-  /* Divergence items */
   .key-divergences { margin-top: 24px; }
-  .divergence-item { background: #161b22; border: 1px solid #30363d; border-left: 3px solid #d29922; border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
-  .divergence-item .title { font-weight: 600; font-size: 13px; color: #d29922; margin-bottom: 4px; }
-  .divergence-item .detail { font-size: 12px; color: #8b949e; line-height: 1.5; }
-
-  /* No-data placeholder */
-  .no-data { font-size: 12px; color: #484f58; font-style: italic; padding: 6px 10px; }
-
-  /* Portfolio Tab */
-  .portfolio-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-  .portfolio-chart { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; }
-  .portfolio-stats { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
-  .port-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #21262d; }
-  .port-stat:last-child { border-bottom: none; }
-  .port-stat-label { font-size: 13px; color: #8b949e; }
-  .port-stat-value { font-size: 15px; font-weight: 600; }
-  .port-table { width: 100%; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; border: 1px solid #30363d; margin-bottom: 24px; }
-  .port-table th { background: #21262d; padding: 10px 14px; text-align: left; font-size: 12px; color: #8b949e; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-  .port-table td { padding: 10px 14px; border-top: 1px solid #21262d; font-size: 13px; vertical-align: middle; }
-  .port-table tr:hover { background: #1c2128; }
-  .port-table .group-header td { background: #1a1f2b; font-weight: 600; color: #8b949e; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; border-top: 2px solid #30363d; }
-  .weight-bar { height: 6px; border-radius: 3px; background: #21262d; min-width: 60px; position: relative; }
-  .weight-fill { height: 100%; border-radius: 3px; }
-  .conviction-dots { display: flex; gap: 3px; }
-  .conviction-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid #484f58; }
-  .conviction-dot.filled { background: #58a6ff; border-color: #58a6ff; }
-  .dir-long { color: #3fb950; font-weight: 600; font-size: 12px; }
-  .dir-short { color: #f85149; font-weight: 600; font-size: 12px; }
-  .dir-watch { color: #d29922; font-weight: 600; font-size: 12px; }
-  .dir-cash { color: #8b949e; font-weight: 600; font-size: 12px; }
-  .port-ring { width: 200px; height: 200px; border-radius: 50%; position: relative; margin: 0 auto; }
-  .port-ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background: #161b22; width: 100px; height: 100px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-  .port-ring-center .port-total { font-size: 22px; font-weight: 700; color: #e1e4e8; }
-  .port-ring-center .port-label { font-size: 10px; color: #6e7681; margin-top: 2px; }
-  .port-legend { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; }
-  .port-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #8b949e; }
-  .port-legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
-  .watchlist-card { background: #161b22; border: 1px solid #30363d; border-left: 3px solid #d29922; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
-  .watchlist-card .wl-title { font-weight: 600; font-size: 13px; color: #d29922; margin-bottom: 4px; }
-  .watchlist-card .wl-detail { font-size: 12px; color: #8b949e; line-height: 1.5; }
-  .port-method { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-top: 24px; font-size: 12px; color: #8b949e; line-height: 1.6; }
-  .port-method h3 { font-size: 14px; color: #c9d1d9; margin-bottom: 8px; }
-
-  /* Responsive */
-  @media (max-width: 768px) {
-    .tf-legend { flex-direction: column; align-items: center; }
-    .tabs { overflow-x: auto; flex-wrap: nowrap; }
-    .grid { grid-template-columns: 1fr; }
-    .portfolio-summary { grid-template-columns: 1fr; }
-  }
+  .divergence-item { background: #161b22; border: 1px solid #30363d; border-left: 3px solid #d29922; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+  .divergence-item .title { font-weight: 600; font-size: 14px; color: #d29922; margin-bottom: 4px; }
+  .divergence-item .detail { font-size: 13px; color: #8b949e; line-height: 1.5; }
+  .new-badge { display: inline-block; background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); border-radius: 10px; font-size: 10px; font-weight: 600; padding: 1px 7px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.5px; }
 </style>
 </head>
 <body>
-
 <div class="header">
   <h1>Macro Signal Dashboard</h1>
-  <div class="subtitle">Cross-Analyst Consensus &amp; Signal Tracker &mdash; v2</div>
-  <div class="updated">Last updated: March 23, 2026 &middot; 5 Analysts &middot; 139 Tracked Calls</div>
+  <div class="subtitle">Cross-Analyst Consensus &amp; Signal Tracker</div>
+  <div class="updated">Last updated: March 25, 2026 &middot; 5 Analysts &middot; 219 Tracked Calls &middot; <span style="color:#58a6ff">Campbell +40 calls (bulk archive); Macro Ops NO SAFEHAVENS; China/EM now Divergent</span></div>
 </div>
 
-<!-- Tabs -->
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('overview')">Overview</div>
-  <div class="tab" onclick="switchTab('commodities')">Commodities</div>
-  <div class="tab" onclick="switchTab('equities')">Equities</div>
-  <div class="tab" onclick="switchTab('bonds')">Bonds &amp; Credit</div>
-  <div class="tab" onclick="switchTab('fx')">FX &amp; Crypto</div>
-  <div class="tab" onclick="switchTab('macro')">Macro Themes</div>
-  <div class="tab" onclick="switchTab('portfolio')">Model Portfolio</div>
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-value val-green">3</div><div class="stat-label">Bullish Signals</div></div>
+  <div class="stat-card"><div class="stat-value val-red">3</div><div class="stat-label">Bearish Signals</div></div>
+  <div class="stat-card"><div class="stat-value val-yellow">5</div><div class="stat-label">Mixed / Divergent</div></div>
+  <div class="stat-card"><div class="stat-value val-blue">219</div><div class="stat-label">Total Calls Logged</div></div>
 </div>
 
-<!-- ==================== OVERVIEW TAB ==================== -->
-<div id="tab-overview" class="tab-content active">
+<div class="grid">
 
-  <!-- Recent Signal Changes -->
-  <div class="recent-changes">
-    <h2>Recent Signal Changes</h2>
-
-    <!-- Mar 22 -->
-    <div class="change-item" style="border-left: 3px solid #58a6ff;">
-      <span class="change-date">MAR 22</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">Inflation / Fed</span>
-          <span class="change-analyst">&mdash; Lyn Alden</span>
-          <span class="st-tag st-tag-view">VIEW</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-old">Gradual easing; range-bound yields</span>
-          <span class="change-arrow">&rarr;</span>
-          <span class="change-new change-new-bear">Stuck &mdash; stagflation = dual mandate simultaneously challenged; will provide liquidity if markets break regardless of inflation</span>
-        </div>
+  <!-- Oil -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Oil (WTI)</span>
+      <span class="signal-badge signal-bullish">Strong Bullish &#x2605;&#x2605;</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bullish" style="width:100%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish (Conv 5) &mdash; Hormuz mostly closed 3+ weeks; 20% of global production; oil analysts alarmed; shortage/rationing risk rising</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; Buy dips, sell 5-10% pops; oil crisis deepening; $80 resistance key</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Strongly Bullish &mdash; Long oil futures + calls; Hormuz -70%; $100+ breached; prolonged disruption premium. Agricultural next: Coffee (breakout), Soybean Oil, Sugar trendline setups (Phase III commodity bull)</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; Long energy; explicit portfolio position; Hormuz threat = persistent supply disruption; core geopolitical hedge. Don't sell on de-escalation bait</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; Primary weekly trend confirmed Bull as of Mar 21 (flipped from Bear); daily &amp; investor cycles both mid = runway ahead</span></div>
       </div>
     </div>
-
-    <div class="change-item" style="border-left: 3px solid #58a6ff;">
-      <span class="change-date">MAR 22</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">Oil (WTI)</span>
-          <span class="change-analyst">&mdash; Lyn Alden</span>
-          <span class="st-tag st-tag-view">VIEW</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-new change-new-bull">Conviction raised to 5 &mdash; Hormuz mostly closed 3+ weeks; 20% of global production; shortage/rationing risk rising</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="change-item" style="border-left: 3px solid #58a6ff;">
-      <span class="change-date">MAR 22</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">US Fiscal</span>
-          <span class="change-analyst">&mdash; Lyn Alden</span>
-          <span class="st-tag st-tag-view">VIEW</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-new change-new-bear">Conviction 5 &mdash; nothing stops fiscal train; war accelerates it; Pentagon requesting $200B</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mar 21 -->
-    <div class="change-item" style="border-left: 3px solid #3fb950;">
-      <span class="change-date">MAR 21</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">Crude Oil</span>
-          <span class="change-analyst">&mdash; Bob Loukas</span>
-          <span class="st-tag st-tag-trade">TRADE</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-old">Primary weekly trend: Bear</span>
-          <span class="change-arrow">&rarr;</span>
-          <span class="change-new change-new-bull">Primary weekly trend flipped to Bull &mdash; daily &amp; investor cycles both mid = runway ahead</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="change-item" style="border-left: 3px solid #f85149;">
-      <span class="change-date">MAR 21</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">S&amp;P 500</span>
-          <span class="change-analyst">&mdash; Bob Loukas</span>
-          <span class="st-tag st-tag-trade">TRADE</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-old">Primary weekly trend: Under Threat (Mar 13)</span>
-          <span class="change-arrow">&rarr;</span>
-          <span class="change-new change-new-bear">Primary weekly trend confirmed Bear &mdash; investor cycle early (Wk 7) = months of weakness ahead</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="change-item" style="border-left: 3px solid #f85149;">
-      <span class="change-date">MAR 21</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">Gold</span>
-          <span class="change-analyst">&mdash; Bob Loukas</span>
-          <span class="st-tag st-tag-trade">TRADE</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-old">Primary weekly trend: Bull &rarr; Under Threat (Mar 13)</span>
-          <span class="change-arrow">&rarr;</span>
-          <span class="change-new change-new-bear">Primary weekly trend confirmed Bear &mdash; low sentiment (37%) = oversold bounce risk but structurally bearish</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mar 18 -->
-    <div class="change-item" style="border-left: 3px solid #f85149;">
-      <span class="change-date">MAR 18</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">S&amp;P 500</span>
-          <span class="change-analyst">&mdash; A. Campbell</span>
-          <span class="st-tag st-tag-trade">TRADE</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-new change-new-bear">"Don't Take the Bait" &mdash; explicit call to sell any ceasefire rally; skeptical of diplomatic resolution</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mar 9 -->
-    <div class="change-item" style="border-left: 3px solid #f85149;">
-      <span class="change-date">MAR 9</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">Credit (HY / Private)</span>
-          <span class="change-analyst">&mdash; A. Campbell</span>
-          <span class="st-tag st-tag-trade">TRADE</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-new change-new-bear">"Watch Credit" &mdash; new explicit short credit position; AI private credit bust; 2001 telecom analogy</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="change-item" style="border-left: 3px solid #3fb950;">
-      <span class="change-date">MAR 9</span>
-      <div>
-        <div class="change-meta">
-          <span class="change-asset">Oil / Commodities / Nasdaq</span>
-          <span class="change-analyst">&mdash; Macro Ops</span>
-          <span class="st-tag st-tag-trade">TRADE</span>
-        </div>
-        <div class="change-desc">
-          <span class="change-new">"Deflationary AI Meets Commodity Bull" &mdash; <span class="change-new-bull">long oil futures + calls, long BBG Commodity Index</span>; <span class="change-new-bear">short Nasdaq, short T-bonds</span>; +40% YTD</span>
-        </div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- Cross-Asset Timeframe Matrix -->
-  <table class="matrix-table">
-    <thead>
-      <tr>
-        <th style="text-align:left">Asset</th>
-        <th><span class="tf-pill tf-pill-st">ST</span></th>
-        <th><span class="tf-pill tf-pill-mt">MT</span></th>
-        <th><span class="tf-pill tf-pill-lt">LT</span></th>
-        <th><span class="tf-pill tf-pill-sec">SEC</span></th>
-        <th>Net</th>
-      </tr>
-    </thead>
+  <!-- Inflation -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Inflation Trajectory</span>
+      <span class="signal-badge signal-bullish">Strong Higher &#x2605;</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bullish" style="width:93%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Stagflationary &mdash; War creates worst-case for Fed dual mandate; shortages + economic weakness simultaneously</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Higher &mdash; 2nd inflation wave worse than 1st; 1970s rhyme; oil bleeding into broad prices</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Stagflationary &mdash; Deflationary AI (services) + commodity bull (goods) = net H2 inflation risk</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Higher &mdash; Iran oil shock + supply chain fragmentation from death of globalism = persistent elevated inflation</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">No explicit call &mdash; cycle framework tracks price action, not macro themes; no inflation view</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Commodities Broad -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Commodities (Broad)</span>
+      <span class="signal-badge signal-bullish">Bullish</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bullish" style="width:80%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish LT &mdash; Three-pillar portfolio: pillar 2 = commodities/producers &amp; hard monies; essential stagflation hedge</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral &mdash; Focused on oil specifically; no broad commodity thesis</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Strongly Bullish &mdash; Cyclical commodity bull: PMs done &rarr; Industrial Metals mid-cycle &rarr; Energy now &rarr; Agriculture next; long BBG Commodity Index + HRW Wheat + Sugar + Corn. Coffee breakout confirmed Mar 21</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; New explicit call (Mar 25): commodity supercycle via dedollarization + geopolitical decoupling + monetary debasement = structural hard asset premium; silver attack thesis = leading indicator<span class="new-badge">NEW</span></span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; Gold in primary Bull Trend (right-translated investor cycle); Crude confirmed Bull Mar 21; broad commodity exposure via model portfolio</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- S&P 500 -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">S&amp;P 500</span>
+      <span class="signal-badge signal-bearish">Bearish</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bearish" style="width:80%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral/Selective &mdash; 200% market/GDP; concentrated ownership; bullish profitable equities at reasonable valuations; cautious on overvalued</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish &mdash; Sell rallies; momentum cliff; covered shorts on oversold but structurally negative</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Strongly Bearish &mdash; &ldquo;NO SAFEHAVENS&rdquo; (Mar 23): Stocks + bonds + gold all selling simultaneously; Aggregate Breadth Indicator +2 (lowest since Mar/Apr 2025); base case: more selling then sideways range until inflation forces Fed's hand; +41.3% YTD; high cash<span class="new-badge">UPDATED</span></span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish &mdash; AI air pocket + credit stress + oil shock + systemic overconfidence; &ldquo;Systems 101&rdquo; (Mar 24): four fragile systems = cascading failure risk; sell rallies; don't take the bait on ceasefire bounces</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish &mdash; Primary Down Trend throughout; investor cycle early (Wk 7/16-20) = months of weakness ahead; extended daily cycle may see bounce before resuming lower</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10Y Yield -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">US 10Y Yield</span>
+      <span class="signal-badge signal-bearish">Higher Yields (Split)</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bearish" style="width:80%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish lean &mdash; Yields rising sharply since war; MOVE elevated but not at break levels; upward pressure on mortgages</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Short 10Y + SOFR Z7 options &mdash; 2nd inflation wave = higher yields; explicit short position via options</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Short T-bonds &mdash; Record small spec longs = crowded wrong; commodity bull = structurally higher long yields</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Strongly Bearish (yields LOWER) &mdash; Credit stress building; &ldquo;Watch Credit&rdquo; + &ldquo;Systems 101&rdquo; thesis: cascading system failures = flight-to-safety = bond rally; conviction upgraded<span class="new-badge">UPDATED</span></span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bonds Underweight in model portfolio across all reports; duration bearish = higher yields via cycle-driven positioning</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gold -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Gold</span>
+      <span class="signal-badge signal-mixed">Divergent &mdash; Bullish Lean</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bullish" style="width:50%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral &mdash; High-sentiment pricing = temporary headwind; still Group A (scarce/high-quality) long-term; repriced from undervalued to fairly valued per Feb newsletter</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">No recent signal &mdash; no model-driven gold call</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Cautious &mdash; Crowded trade (CB buying + debasement + geopolitical); washout risk building; not adding. &ldquo;NO SAFEHAVENS&rdquo;: gold sold off alongside stocks + bonds</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish (Conv 5) &mdash; Long gold; &ldquo;War for the Dollar&rdquo; + &ldquo;What the Heck Happened to Gold&rdquo; (Mar 20): $3,000 breakout is structural; 4-pillar thesis intact. Don't take the bait on short-term volatility</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; Primary Bull Trend intact; investor cycle right-translated (Wk 34 vs 22-26 normal) = highly bullish structure; late cycle suggests near-term consolidation</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DXY -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">US Dollar (DXY)</span>
+      <span class="signal-badge signal-mixed">Divergent</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-neutral" style="width:50%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">LT Bearish &mdash; Dollar weakening cycle; Fed easing; gradual print mildly dollar-negative per Feb newsletter</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">ST Bullish &mdash; Iran war + terms of trade shock; safety bid supports dollar near-term</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral &mdash; Commodity bull + deflationary AI = offsetting forces; no active USD position</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral/Bearish LT &mdash; &ldquo;War on dollar&rdquo; thesis real but US capital markets + crypto re-dollarization = no collapse; structural erosion, not crisis</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish &mdash; Dollar in Down Trend; primary cycle analysis confirms weakening pattern</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bitcoin -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Bitcoin</span>
+      <span class="signal-badge signal-mixed">Divergent</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bullish" style="width:50%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish LT &mdash; Group A scarce asset; both BTC and precious metals have long-term structural stories; gradual liquidity supportive</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral &mdash; BTC model value 75,790 vs spot 70,900 (mildly undervalued but only 1 sigma); momentum peaking; no systematic signal. ETH bearish (overvalued 6.6%); Long BTC/Short ETH best RV play<span class="new-badge">UPDATED</span></span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral &mdash; No explicit call; crypto/blockchain viewed structurally through commodity/real asset lens</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">No directional price call &mdash; Bullish on crypto payment rails / agentic wallets structurally; no BTC price call</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; Bitcoin Core maintained as position in model portfolio throughout review period</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fed Policy -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">Fed Policy</span>
+      <span class="signal-badge signal-mixed">Divergent</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bearish" style="width:40%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Stuck &mdash; Stagflation = dual mandate simultaneously challenged; will provide liquidity if markets break regardless of inflation</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Hawkish &mdash; Rate cuts were 1970s Burns mistake; left too vulnerable; 2nd inflation wave precludes easing</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Hawkish lean &mdash; Stagflation + commodity bull implies cuts impossible; &ldquo;NO SAFEHAVENS&rdquo;: base case is sideways until inflation forces Fed's hand</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Constrained &mdash; Oil shock + sticky inflation thesis implies cuts unlikely; overconfident Fed (Systems 101) = policy risk underpriced</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">No explicit call &mdash; focus is on US/Gold/Crude/Dollar cycles</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- China/EM -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">China / EM Outlook</span>
+      <span class="signal-badge signal-mixed">Divergent<span class="new-badge">CHANGED</span></span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-neutral" style="width:50%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish &mdash; LatAm financials working; India for 2026; EM commodity exporters benefit from commodity bull</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-bull"></div><span class="view-text">Bullish India &mdash; INDA 2.8 sigma cheap; bought; largest dislocation in 10 years</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish &mdash; Short EM in model portfolio as of Mar 23 (&ldquo;NO SAFEHAVENS&rdquo;); broad risk-off posture</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish China &mdash; New explicit call (Mar 25): &ldquo;Dear Comrade Xi&rdquo; (Feb 2): structural debt deflation cannot be stimulated away; Xi faces impossible policy trilemma; China/EM explicitly bearish<span class="new-badge">NEW</span></span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">No explicit call &mdash; cycle methodology does not cover EM markets</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- US Fiscal -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">US Fiscal Deficit</span>
+      <span class="signal-badge signal-bearish">Concern</span>
+    </div>
+    <div class="consensus-bar"><div class="consensus-fill fill-bearish" style="width:42%"></div></div>
+    <div class="analysts">
+      <div class="analyst-row">
+        <span class="analyst-name">Lyn Alden</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish (Conv 5) &mdash; Nothing stops fiscal train; war accelerates it; Pentagon requesting $200B; Triffin Dilemma + fiscal dominance = structural</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Danny Dayan</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral &mdash; Trump may use fiscal stimulus for midterms</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Macro Ops</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">Neutral &mdash; No explicit fiscal call; commodity bull thesis independent of fiscal dynamics</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">A. Campbell</span>
+        <div class="analyst-view"><div class="dot dot-bear"></div><span class="view-text">Bearish &mdash; &ldquo;Death of the New Deal&rdquo; (Feb 23): DOGE fiscal austerity = demand destruction; but &ldquo;Death of Globalism&rdquo; = rising defense spending simultaneously; fiscal dynamics complex</span></div>
+      </div>
+      <div class="analyst-row">
+        <span class="analyst-name">Bob Loukas</span>
+        <div class="analyst-view"><div class="dot dot-neutral"></div><span class="view-text">No explicit call &mdash; cycle methodology does not address fiscal dynamics</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="summary-section key-divergences">
+  <h2>Key Divergences</h2>
+  <div class="divergence-item" style="border-left-color: #58a6ff;">
+    <div class="title" style="color:#58a6ff;">Alexander Campbell Bulk Archive: 13 Posts, +40 Calls — Major Tracker Update<span class="new-badge">NEW</span></div>
+    <div class="detail"><b>Alexander Campbell</b> now has 63 calls logged (up from 23), making him the most-tracked analyst by call count. The Mar 25 processing sweep archived 13 previously unarchived posts spanning Jan 25 – Mar 24, 2026. Key new explicit calls now on the Consensus Matrix: (1) <b>Commodities (Broad) Bullish</b> — commodity supercycle via dedollarization + monetary debasement + geopolitical decoupling; (2) <b>China/EM Bearish</b> — structural debt deflation + Xi's impossible policy trilemma; (3) <b>US 10Y Yield conviction upgraded to -1</b> — flight-to-safety thesis now his strongest conviction. This update moves his China/EM view from absent to explicitly bearish, changing the <b>China/EM signal from Bullish Lean to Divergent</b>.</div>
+  </div>
+  <div class="divergence-item" style="border-left-color: #d29922;">
+    <div class="title">US 10Y Yield: Internal Directional Split Within "Bearish" Camp<span class="new-badge">NEW</span></div>
+    <div class="detail">All 5 analysts are "bearish" on 10Y yields, but the <b>direction is split</b>: <b>Danny Dayan + Macro Ops + Bob Loukas + Lyn Alden</b> expect <b>yields to rise</b> (short bonds; 2nd inflation wave + commodity bull = higher long yields). <b>Alexander Campbell</b> now strongly expects <b>yields to fall</b> — his "Watch Credit" + "Systems 101" thesis posits that cascading system failures (AI private credit bust + CRE + overconfident investors) will trigger a credit event and flight-to-safety bond rally. Same signal label, opposite direction. This is the most significant emerging divergence in the tracker.</div>
+  </div>
+  <div class="divergence-item" style="border-left-color: #f85149;">
+    <div class="title">China/EM: Signal Downgrades to Divergent (Was Bullish Lean)<span class="new-badge">CHANGED</span></div>
+    <div class="detail">The China/EM signal was previously a tentative Bullish Lean (Lyn Alden + Danny Dayan bullish on India; others silent). With today's update, <b>Alexander Campbell adds an explicit China/EM Bearish call</b> ("Dear Comrade Xi," Feb 2) and <b>Macro Ops is short EM</b> as part of their risk-off book ("NO SAFEHAVENS"). The score now splits: Lyn + Danny (Bullish India/EM) vs. Campbell + Macro Ops (Bearish China/EM). This is now the most evenly-split signal in the tracker.</div>
+  </div>
+  <div class="divergence-item" style="border-left-color: #3fb950;">
+    <div class="title">Macro Ops &ldquo;NO SAFEHAVENS&rdquo;: All Assets Selling Simultaneously<span class="new-badge">UPDATED</span></div>
+    <div class="detail"><b>Macro Ops</b> published "NO SAFEHAVENS" (Mar 23): stocks, bonds, and gold are all selling at the same time — no traditional safe-haven working. The Aggregate Breadth Indicator dropped to <b>+2, the lowest reading since Mar/Apr 2025</b>. Their base case: more selling first, then a sideways range until inflation forces the Fed's hand. Portfolio is <b>+41.3% YTD</b> despite a -150bps week. Core book intact: Long Crude + BBG Commodities + HRW Wheat + Sugar + Corn; Short EM + Short T-Bonds; High Cash. Agricultural Phase III setups identified: Coffee (decisive breakout), Soybean Oil, Sugar.</div>
+  </div>
+  <div class="divergence-item" style="border-left-color: #3fb950;">
+    <div class="title">Bob Loukas (Cycle Analysis) Confirms S&amp;P Bear + Crude Bull Simultaneously</div>
+    <div class="detail">On March 21, 2026, Bob Loukas's cycle methodology independently confirmed two major trend changes: (1) <b>S&amp;P 500 primary weekly trend flipped to Bear</b> (had been "Under Threat" Mar 13), and (2) <b>Crude Oil primary weekly trend flipped to Bull</b> (had been Bear since at least Jan 24). This cycle-based confirmation is methodology-independent from the fundamental and quantitative views of the other four analysts &mdash; yet arrives at the same conclusion on both assets. <b>Gold</b> remains in its primary Bull Trend with the investor cycle right-translated to Week 34 (normal range 22-26) &mdash; structurally bullish.</div>
+  </div>
+  <div class="divergence-item">
+    <div class="title">Gold: Campbell &amp; Bob Loukas Bullish vs. Lyn/Dayan/Macro Ops Neutral or Cautious</div>
+    <div class="detail"><b>Alexander Campbell</b> is explicitly <b>long gold</b> at 5/5 conviction &mdash; his "war on the dollar" thesis argues Iran's call to dump the reserve currency is a material geopolitical risk; $3,000 breakout is structural, not a bubble ("What the Heck Happened to Gold," Mar 20). <b>Bob Loukas</b> is bullish via cycle analysis (primary Bull Trend, right-translated). <b>Lyn Alden</b> holds but won't add (repriced from undervalued to fairly valued). <b>Danny Dayan</b> has no model signal. <b>Macro Ops</b> is cautious — sees the trade as crowded with washout risk, and notes gold sold off alongside everything else in "NO SAFEHAVENS." Campbell + Loukas conviction vs. the others' caution remains a sharp divergence.</div>
+  </div>
+  <div class="divergence-item">
+    <div class="title">US Dollar: Four-Way Split &mdash; LT Bear / ST Bull / Neutral / Neutral / Bearish</div>
+    <div class="detail"><b>Lyn Alden</b> is structurally bearish (multi-year weakening cycle, gradual print mildly dollar-negative). <b>Danny Dayan</b> sees near-term dollar strength (Iran war safe haven + terms of trade). <b>Macro Ops</b> and <b>Alexander Campbell</b> are both neutral from different angles (Campbell: structural erosion but no collapse due to US capital markets + crypto re-dollarization). <b>Bob Loukas</b> is bearish via cycle analysis (primary Down Trend). The five views span the full encoding range.</div>
+  </div>
+  <div class="divergence-item">
+    <div class="title">S&amp;P 500: 4-of-5 Bearish &mdash; Cross-Methodology Convergence</div>
+    <div class="detail"><b>Lyn Alden</b> is neutral with selective opportunities. The other four are all bearish with independent reasoning: <b>Danny Dayan</b> (momentum collapse + FCI tightening), <b>Macro Ops</b> (dot-com valuations + paradigm shift + NO SAFEHAVENS breadth collapse), <b>Alexander Campbell</b> (AI air pocket + credit stress + systemic overconfidence), and <b>Bob Loukas</b> (primary Bear Trend confirmed). Four independent bearish frameworks on the same conclusion is the most robust cross-methodology alignment in the tracker.</div>
+  </div>
+  <div class="divergence-item">
+    <div class="title">Macro Ops Unique: Deflationary AI Meets Commodity Supercycle</div>
+    <div class="detail"><b>Macro Ops</b> frames the market through a dual-paradigm lens: (1) deflationary AI revolution crushing unit labor costs and disrupting legacy software/SaaS, and (2) a classic cyclical commodity supercycle with Energy in its strongest phase and <b>Agriculture now entering Phase III</b> (Coffee, Soybean Oil, Sugar setups confirmed Mar 21). Portfolio: long oil futures + calls, long BBG Commodity Index, short T-bonds, short EM; +41.3% YTD. The Agricultural Phase III call adds a new dimension to the commodity bull thesis that none of the other analysts have explicitly articulated.</div>
+  </div>
+</div>
+
+<div class="summary-section" style="margin-top:24px;">
+  <h2>Consensus Signals (Analysts Agree)</h2>
+  <table class="agree-table">
+    <thead><tr><th>Asset</th><th>Direction</th><th>Lyn Alden</th><th>Danny Dayan</th><th>Macro Ops</th><th>A. Campbell</th><th>Bob Loukas</th><th>Confidence</th></tr></thead>
     <tbody>
-      <!-- Commodities Group -->
-      <tr class="group-header"><td colspan="6">Commodities</td></tr>
       <tr>
-        <td>Oil (WTI)</td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-bull">D</span><span class="adot adot-bull">M</span><span class="adot adot-bull">A</span><span class="adot adot-bull">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#3fb950">Buy dips, sell 5-10% pops</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#3fb950">Daily cycle mid = runway</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-bull">D</span><span class="adot adot-bull">M</span><span class="adot adot-bull">A</span><span class="adot adot-bull">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Long oil futures + calls</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#3fb950">Weekly primary Bull confirmed Mar 21</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-bull">D</span><span class="adot adot-bull">M</span><span class="adot adot-bull">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Hormuz + 20% global supply</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#3fb950">Long energy portfolio position</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Commodity pillar essential</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Energy phase of supercycle</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Strong Bull &#x2605;&#x2605;</span></td>
+        <td><b>Oil (WTI)</b></td>
+        <td><span class="agree-icon">&#x1F7E2;</span> Bullish</td>
+        <td>AI power demand + Hormuz fundamentals</td>
+        <td>Buy dips; oil crisis deepening; 1970s echoes</td>
+        <td>Long oil futures + calls; Hormuz -70%; $100+ breached; Agri Phase III next</td>
+        <td>Long energy; explicit portfolio; don't sell on ceasefire bait</td>
+        <td>Primary Bull Trend confirmed Mar 21</td>
+        <td><b>Highest &#x2605;&#x2605;&#x2605;&#x2605;&#x2605;</b> &mdash; All 5 agree</td>
       </tr>
       <tr>
-        <td>Gold</td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Late daily cycle; primary Bear confirmed</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-neutral">L</span><span class="adot adot-none">D</span><span class="adot adot-neutral">M</span><span class="adot adot-none">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Primary weekly Bear Mar 21</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#8b949e">Crowded; washout risk</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-neutral">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-bull">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#8b949e">High sentiment = headwind; still LT quality</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#3fb950">Long gold; war on dollar (Conv 5/5)</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-bull">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Group A scarce asset; hard monies pillar</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#3fb950">Reserve currency erosion hedge</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-mixed" style="font-size:10px">Divergent</span></td>
+        <td><b>Inflation</b></td>
+        <td><span class="agree-icon">&#x1F534;</span> Higher</td>
+        <td>Fiscal dominance; tariffs; multipolar world</td>
+        <td>2nd inflation wave; oil shock into broad prices</td>
+        <td>Stagflationary H2 &mdash; AI deflation in services + commodity bull in goods</td>
+        <td>Oil shock + supply chain fragmentation from Iran war</td>
+        <td>N/A (no macro view)</td>
+        <td><b>Highest &#x2605;&#x2605;&#x2605;&#x2605;</b> &mdash; All 4 macro analysts agree</td>
       </tr>
       <tr>
-        <td>Silver</td>
-        <td class="consensus-cell">
-          <span class="sig sig-none">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Metals crash update Jan 30</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-bull">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#3fb950">"Silver Moon" — structural bull Jan 25</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td><span class="signal-badge signal-neutral" style="font-size:10px">Low Coverage</span></td>
+        <td><b>T-Bonds / 10Y</b></td>
+        <td><span class="agree-icon">&#x1F534;</span> Bearish <i>(Higher Yields majority; Campbell dissents — Lower)</i></td>
+        <td>Yields rising; MOVE elevated; upward pressure</td>
+        <td>Short 10Y + SOFR Z7; 2nd inflation wave = no cuts</td>
+        <td>Short T-bonds; record small spec longs = crowded wrong</td>
+        <td>Flight-to-safety = yields LOWER on credit event</td>
+        <td>Bonds Underweight; duration bearish</td>
+        <td><b>High &#x2605;&#x2605;&#x2605;&#x2605;</b> &mdash; 5/5 bearish; directional split within</td>
       </tr>
       <tr>
-        <td>Wheat (KC HRW)</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Long KC HRW; agriculture next in supercycle</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Agriculture = next phase of commodity supercycle</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Bull (1 analyst)</span></td>
+        <td><b>S&amp;P 500</b></td>
+        <td><span class="agree-icon">&#x1F534;</span> Bearish / Cautious</td>
+        <td>Neutral/selective &mdash; not adding to broad index</td>
+        <td>Sell rallies; momentum cliff; structurally negative</td>
+        <td>NO SAFEHAVENS; breadth +2 low; more selling ahead</td>
+        <td>AI air pocket + credit + systemic overconfidence; sell rallies</td>
+        <td>Primary Bear Trend; months of weakness ahead</td>
+        <td><b>High &#x2605;&#x2605;&#x2605;&#x2605;</b> &mdash; 4/5 bearish; Lyn neutral</td>
       </tr>
       <tr>
-        <td>Commodities (Broad)</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-bull">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Long BBG Commodity Index</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#3fb950">Broad commodity model portfolio</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-bull">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Pillar 2 = commodities/producers</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Cyclical bull playbook</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#3fb950">Gold Bull + Crude Bull confirmed</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Essential stagflation hedge</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Commodity supercycle</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Bullish</span></td>
+        <td><b>India / EM</b></td>
+        <td><span class="agree-icon">&#x1F7E1;</span> Split</td>
+        <td>Multi-year EM rotation; India to outperform 2026</td>
+        <td>INDA 2.8 sigma cheap &mdash; largest dislocation in 10 years</td>
+        <td>Short EM (risk-off, NO SAFEHAVENS)</td>
+        <td>China structurally bearish; broader EM caution</td>
+        <td>No EM coverage</td>
+        <td><b>Medium &#x2605;&#x2605;</b> &mdash; Lyn + Dayan bullish India; Macro Ops + Campbell bearish EM broadly</td>
       </tr>
       <tr>
-        <td>Industrial Metals</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Mid-cycle; RS improving vs equities</span></div></div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Phase 2 of commodity supercycle</span></div></div>
-        </td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Bull (1)</span></td>
-      </tr>
-      <tr>
-        <td>Uranium</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Uranium breakout durable; nuclear thesis</span></div></div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">AI power demand → nuclear structural beneficiary</span></div></div>
-        </td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Bull (1)</span></td>
-      </tr>
-      <tr>
-        <td>Agriculture (Broad)</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Wheat long; watching sugar + corn</span></div></div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">Final phase of commodity supercycle</span></div></div>
-        </td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Emerging</span></td>
-      </tr>
-      <tr>
-        <td>Sugar</td>
-        <td class="consensus-cell">
-          <span class="sig sig-neutral">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-neutral">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#8b949e">Double bottom; watching for entry</span></div></div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td><span class="signal-badge signal-neutral" style="font-size:10px">Watchlist</span></td>
-      </tr>
-
-      <!-- Equities Group -->
-      <tr class="group-header"><td colspan="6">Equities</td></tr>
-      <tr>
-        <td>Oil &amp; Gas E&amp;P</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip"><div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">#1 RS Thematic; Trifecta confirmed; 50%+ target</span></div></div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-bull">M</span><span class="adot adot-bull">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">GUNR 34%; producers at ATHs</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#3fb950">50%+ O&amp;G allocation</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#3fb950">Long energy portfolio position</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Strong Bull</span></td>
-      </tr>
-      <tr>
-        <td>S&amp;P 500</td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-bear">D</span><span class="adot adot-none">M</span><span class="adot adot-bear">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">Sell rallies; momentum cliff</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">Sell ceasefire rally</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Extended daily — bounce then resume lower</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-bear">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">Structurally negative</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Equity book flat; paradigm shift</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">AI air pocket + credit stress</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Investor cycle early (Wk 7) = months of weakness</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-neutral">L</span><span class="adot adot-bear">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#8b949e">Neutral/selective — 200% mkt/GDP</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Dot-com valuations; FINRA margin ATH</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">Oil shock + credit stress</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Primary Down Trend throughout</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bear">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Paradigm shift from financial to real assets</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bearish" style="font-size:10px">Bearish</span></td>
-      </tr>
-      <tr>
-        <td>Nasdaq</td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Short Nasdaq</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">AI air pocket — capex cycle</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Short Nasdaq; deflationary AI disrupts SaaS</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">AI capex = fewer buybacks</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bear">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Deflationary AI disrupts legacy software</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bearish" style="font-size:10px">Bearish</span></td>
-      </tr>
-      <tr>
-        <td>India (INDA)</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-bull">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#3fb950">INDA 2.8σ cheap; bought</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-bull">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">India for 2026</span></div>
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#3fb950">Largest dislocation in 10 years</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Bull (2 analysts)</span></td>
-      </tr>
-      <tr>
-        <td>China / EM Broad</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-bull">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">LatAm financials working</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#3fb950">Right-translated investor cycle (Wk 34)</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-bull">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Multi-year EM rotation</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#3fb950">Primary Bull Trend intact</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-neutral">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-neutral">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#8b949e">Death of globalism = caution on China</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bullish" style="font-size:10px">Bullish Lean</span></td>
-      </tr>
-
-      <!-- Bonds Group -->
-      <tr class="group-header"><td colspan="6">Bonds &amp; Credit</td></tr>
-      <tr>
-        <td>US 10Y Yield</td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-bear">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Yields rising sharply since war</span></div>
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">Short 10Y + SOFR Z7 options</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-bear">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">2nd inflation wave = higher yields</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Short T-bonds; crowded spec longs</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">Robot marginally short; war precludes cuts</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bear">M</span><span class="adot adot-none">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Commodity bull = structurally higher long yields</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Bonds underweight in model portfolio</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td><span class="signal-badge signal-bearish" style="font-size:10px">Higher Yields</span></td>
-      </tr>
-      <tr>
-        <td>T-Bonds (Long End)</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bear">M</span><span class="adot adot-none">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Short T-bonds; record spec longs wrong</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Underweight consistently</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-bear">M</span><span class="adot adot-none">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Commodity bull = structurally higher yields</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Persistent underweight</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td><span class="signal-badge signal-bearish" style="font-size:10px">Bearish</span></td>
-      </tr>
-      <tr>
-        <td>Credit (HY / Private)</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-bear">D</span><span class="adot adot-none">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">FCI tightening; credit deteriorating</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">Short credit; AI private credit bust</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Private credit stress; banks w/ NDFI exposure</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">2001 telecom analogy; explicit short</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td><span class="signal-badge signal-bearish" style="font-size:10px">Bearish</span></td>
-      </tr>
-
-      <!-- FX & Crypto Group -->
-      <tr class="group-header"><td colspan="6">FX &amp; Crypto</td></tr>
-      <tr>
-        <td>US Dollar (DXY)</td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-bull">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#3fb950">Iran war safe haven + terms of trade</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-neutral">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-neutral">M</span><span class="adot adot-neutral">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#8b949e">Offsetting forces; no position</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#8b949e">Complex picture; no collapse</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-bear">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Dollar weakening cycle; Fed easing</span></div>
-            <div class="t-row"><span class="t-name">Bob Loukas</span><span class="t-call" style="color:#f85149">Bearish duration / underweight</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-neutral">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Multi-year weakening cycle</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#8b949e">"War on dollar" real but offset by capital markets</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-mixed" style="font-size:10px">Divergent</span></td>
-      </tr>
-      <tr>
-        <td>Bitcoin</td>
-        <td class="consensus-cell">
-          <span class="sig sig-neutral">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-neutral">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#8b949e">No signal; 7.2% rich vs 80.2k FV</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Group A scarce asset; hard monies pillar</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bull">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bull">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-neutral">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#3fb950">Scarce digital asset; structural</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#8b949e">Bullish crypto rails; no BTC price call</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-mixed" style="font-size:10px">Divergent</span></td>
-      </tr>
-
-      <!-- Macro Themes Group -->
-      <tr class="group-header"><td colspan="6">Macro Themes</td></tr>
-      <tr>
-        <td>Inflation</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-bear">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Stagflationary; shortages + weakness</span></div>
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">2nd wave worse than 1st</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Net H2 inflation risk</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">Oil shock + supply chain fragmentation</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-bear">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">All 4 macro analysts</span><span class="t-call" style="color:#f85149">Higher inflation — different mechanisms</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9650;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-bear">D</span><span class="adot adot-bear">M</span><span class="adot adot-bear">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Fiscal dominance; multipolar world</span></div>
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">1970s inflation wave rhyme</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#f85149">Commodity supercycle = persistent goods inflation</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#f85149">Death of globalism = supply fragmentation</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bearish" style="font-size:10px">Strong Higher &#x2605;</span></td>
-      </tr>
-      <tr>
-        <td>Fed Policy</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-neutral">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-neutral">L</span><span class="adot adot-bear">D</span><span class="adot adot-neutral">M</span><span class="adot adot-neutral">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#8b949e">Stuck — dual mandate challenged</span></div>
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">Hawkish — Burns mistake</span></div>
-            <div class="t-row"><span class="t-name">Macro Ops</span><span class="t-call" style="color:#8b949e">Cuts impossible; hawkish lean</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#8b949e">Oil shock implies cuts unlikely</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-neutral">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-neutral">L</span><span class="adot adot-bear">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#8b949e">Will provide liquidity if markets break</span></div>
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#f85149">Too loose for 2nd wave</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-neutral">&mdash;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Fiscal dominance = $2T+ eventually</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-mixed" style="font-size:10px">Stuck / Hawkish</span></td>
-      </tr>
-      <tr>
-        <td>US Fiscal Deficit</td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell"><span class="sig sig-none">&mdash;</span><div class="analyst-dots"><span class="adot adot-none">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div></td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-neutral">D</span><span class="adot adot-none">M</span><span class="adot adot-none">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Nothing stops fiscal train; Pentagon $200B</span></div>
-            <div class="t-row"><span class="t-name">Dayan</span><span class="t-call" style="color:#8b949e">Trump may use fiscal stimulus for midterms</span></div>
-          </div>
-        </td>
-        <td class="consensus-cell">
-          <span class="sig sig-bear">&#9660;</span>
-          <div class="analyst-dots"><span class="adot adot-bear">L</span><span class="adot adot-none">D</span><span class="adot adot-none">M</span><span class="adot adot-neutral">A</span><span class="adot adot-none">B</span></div>
-          <div class="tooltip">
-            <div class="t-row"><span class="t-name">Lyn Alden</span><span class="t-call" style="color:#f85149">Triffin Dilemma + fiscal dominance = structural</span></div>
-            <div class="t-row"><span class="t-name">Campbell</span><span class="t-call" style="color:#8b949e">Death of globalism → rising defense spending</span></div>
-          </div>
-        </td>
-        <td><span class="signal-badge signal-bearish" style="font-size:10px">Concern</span></td>
+        <td><b>Credit (Short)</b></td>
+        <td><span class="agree-icon">&#x1F534;</span> Bearish</td>
+        <td>Private credit stress flagged (banks with NDFI exposure)</td>
+        <td>FCI tightening &rarr; credit conditions deteriorating</td>
+        <td>No explicit credit short (equity flat implies caution)</td>
+        <td>Short credit — explicit position; AI private credit bust + oil shock + systems overconfidence (Systems 101)</td>
+        <td>No explicit credit view</td>
+        <td><b>Medium &#x2605;&#x2605;</b> &mdash; Campbell most explicit; others corroborate</td>
       </tr>
     </tbody>
   </table>
-
-  <!-- Key Divergences -->
-  <div class="key-divergences">
-    <h2 style="font-size:18px; font-weight:600; margin-bottom:12px; color:#c9d1d9;">Key Divergences</h2>
-    <div class="divergence-item" style="border-left-color:#d29922;">
-      <div class="title">Gold: ST/MT Bear vs LT/Secular Bull — Timeframe Divergence Within the Same Asset</div>
-      <div class="detail">Bob Loukas's cycle analysis confirmed gold's primary weekly trend as Bear on Mar 21, and Macro Ops sees washout risk from crowding. But Campbell is long at max conviction (5/5) on a structural "war on the dollar" thesis, and Lyn holds gold as part of her hard-monies pillar. This is a textbook timeframe divergence: the trade is painful now but the thesis is intact for holders with a longer horizon.</div>
-    </div>
-    <div class="divergence-item" style="border-left-color:#3fb950;">
-      <div class="title">Bob Loukas Cycle Confirmation: S&amp;P Bear + Crude Bull Simultaneously (Mar 21)</div>
-      <div class="detail">Independent cycle methodology confirmed two major trend changes in the same report: S&amp;P 500 primary weekly flipped to Bear, Crude Oil flipped to Bull. This aligns with all four fundamental/quant analysts — rare cross-methodology convergence.</div>
-    </div>
-    <div class="divergence-item">
-      <div class="title">US Dollar: ST Bull / MT Neutral / LT Bear — Full Timeframe Disagreement</div>
-      <div class="detail">Dayan sees short-term dollar strength (war safe haven). Macro Ops and Campbell are neutral medium-term (offsetting forces). Lyn Alden is structurally bearish long-term (weakening cycle). All four views can be simultaneously correct — the key for positioning is which timeframe you're trading.</div>
-    </div>
-  </div>
-
-  <!-- Analyst Coverage -->
-  <div class="summary-section" style="margin-top:24px; margin-bottom:40px;">
-    <h2>Analyst Coverage</h2>
-    <table class="agree-table">
-      <thead><tr><th>Analyst</th><th>Focus</th><th>Calls</th><th>Latest</th><th>Cadence</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>Lyn Alden</b></td>
-          <td>Fundamental macro, fiscal/monetary, long-term positioning</td>
-          <td>52</td>
-          <td>Mar 22, 2026</td>
-          <td>Biweekly premium + ~6-week free newsletters</td>
-        </tr>
-        <tr>
-          <td><b>Danny Dayan</b></td>
-          <td>Quantitative macro, FCI models, short-term trading signals</td>
-          <td>35</td>
-          <td>Mar 22, 2026</td>
-          <td>Multiple per week</td>
-        </tr>
-        <tr>
-          <td><b>Macro Ops</b></td>
-          <td>Global macro, commodities supercycle, Trifecta Lens</td>
-          <td>16</td>
-          <td>Mar 21, 2026</td>
-          <td>Multiple per week + monthly thematic</td>
-        </tr>
-        <tr>
-          <td><b>Alexander Campbell</b></td>
-          <td>Macro + geopolitics, AI/tech disruption, credit, reserve currency</td>
-          <td>23</td>
-          <td>Mar 23, 2026</td>
-          <td>Multiple per month (event-driven)</td>
-        </tr>
-        <tr>
-          <td><b>Bob Loukas</b></td>
-          <td>Market cycle analysis (daily/weekly/investor cycles)</td>
-          <td>13</td>
-          <td>Mar 21, 2026</td>
-          <td>Weekly premium + ad hoc videos</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </div>
 
-<!-- ==================== COMMODITIES TAB ==================== -->
-<div id="tab-commodities" class="tab-content">
-  <div class="grid">
-
-    <!-- Oil (WTI) -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Oil (WTI)</span>
-        <span class="signal-badge signal-bullish">Strong Bullish &#x2605;&#x2605;</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bull st-trade"></div><span class="view-text">Buy dips, sell 5-10% pops; $80 resistance key <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Daily cycle mid = runway ahead <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-trade"></div><span class="view-text">Long oil futures + calls; Hormuz -70%; $100+ breached; disruption premium <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bull st-trade"></div><span class="view-text">Primary weekly trend confirmed Bull Mar 21; investor cycle mid <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Hormuz mostly closed 3+ weeks; 20% of global production; shortage/rationing risk <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Long energy; explicit portfolio position; Hormuz = persistent supply disruption <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Commodities/producers = essential pillar in stagflationary regime <span class="st-tag st-tag-pos">POS</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Energy phase of commodity supercycle; follows PMs → Industrial Metals <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Gold -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Gold</span>
-        <span class="signal-badge signal-mixed">Divergent &mdash; Timeframe Split</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-trade"></div><span class="view-text">Late daily cycle; primary Bear confirmed Mar 21; low sentiment (37%) = oversold bounce risk <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Crowded trade (CB buying + debasement + geopolitical); washout risk building; not adding <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Primary weekly Bear as of Mar 21 (was Bull then Under Threat Mar 13) <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">High-sentiment pricing = headwind; still Group A long-term <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Long gold; war on dollar thesis; geopolitical haven + reserve currency erosion (Conv 5/5) <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Group A scarce asset; hard monies pillar in three-pillar portfolio <span class="st-tag st-tag-pos">POS</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Reserve currency erosion = structural gold bid <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Silver -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Silver</span>
-        <span class="signal-badge signal-neutral">Low Coverage</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Metals crash update Jan 30 — near-term pressure <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">"Silver Moon" (Jan 25) — structural bull thesis <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Wheat -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Wheat (KC HRW)</span>
-        <span class="signal-badge signal-bullish">Bull (1 Analyst)</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-trade"></div><span class="view-text">Long KC Hard Red Winter Wheat; agriculture = next phase of supercycle rotation <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Agriculture = final phase of commodity supercycle rotation (PMs → Industrials → Energy → Ag) <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Commodities Broad -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Commodities (Broad Index)</span>
-        <span class="signal-badge signal-bullish">Bullish</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-trade"></div><span class="view-text">Long BBG Commodity Index; cyclical bull playbook <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Broad commodity exposure via model portfolio; Gold Bull + Crude Bull confirmed <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Pillar 2 = commodities/producers &amp; hard monies; essential stagflation hedge <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Commodity supercycle: PMs done → Industrial Metals mid-cycle → Energy now → Agriculture next <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Structural commodity demand in multipolar / stagflationary world <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Uranium -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Uranium</span>
-        <span class="signal-badge signal-bullish">Bullish (1 Analyst)</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">"Uranium breakout durable"; AI power demand reinforces nuclear thesis <span class="new-badge">FEB 1</span> <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">AI capex cycle driving massive power demand; nuclear/uranium structural beneficiary <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Industrial Metals -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Industrial Metals</span>
-        <span class="signal-badge signal-bullish">Bullish (1 Analyst)</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Mid-cycle commodity bull; RS improving vs equities <span class="new-badge">MAR 13</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Phase 2 of commodity supercycle rotation (PMs &rarr; Industrial Metals &rarr; Energy &rarr; Ag) <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Agriculture (Broad) -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Agriculture (Broad)</span>
-        <span class="signal-badge signal-bullish">Emerging Bull</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Next commodity rotation target; wheat long on; watching sugar and corn entries <span class="new-badge">MAR 13</span> <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Final phase of commodity supercycle rotation (PMs &rarr; Industrials &rarr; Energy &rarr; Agriculture) <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sugar -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Sugar</span>
-        <span class="signal-badge signal-neutral">Watchlist</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Double bottom weekly + daily; bearish news failures; watching for entry &mdash; not yet positioned <span class="new-badge">MAR 9</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ==================== EQUITIES TAB ==================== -->
-<div id="tab-equities" class="tab-content">
-  <div class="grid">
-
-    <!-- Oil & Gas E&P (Equities) -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Oil &amp; Gas E&amp;P (Equities)</span>
-        <span class="signal-badge signal-bullish">Strongly Bullish</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bull st-trade"></div><span class="view-text">#1 RS Thematic; Trifecta all confirmed; targeting 50%+ portfolio weighting in O&amp;G <span class="new-badge">MAR 13</span> <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Energy producers at ATHs; increased GUNR to 34% of commodity pie <span class="new-badge">FEB 17</span> <span class="st-tag st-tag-pos">POS</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Long energy; explicit portfolio position; Hormuz = persistent supply disruption <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- S&P 500 -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">S&amp;P 500</span>
-        <span class="signal-badge signal-bearish">Bearish</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-trade"></div><span class="view-text">Sell rallies; momentum cliff; covered shorts on oversold <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-trade"></div><span class="view-text">Don't take the bait — sell ceasefire rally <span class="new-badge">MAR 18</span> <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Extended daily cycle may see bounce before resuming lower <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Structurally negative; FCI tightening <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-pos"></div><span class="view-text">Equity book flat; dot-com valuations; FINRA margin ATH <span class="st-tag st-tag-pos">POS</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">AI air pocket + credit stress + oil shock <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Investor cycle early (Wk 7/16-20) = months of weakness ahead <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Neutral/selective — 200% mkt/GDP; bullish profitable equities at reasonable valuations <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Paradigm shift to real assets; dot-com era valuations <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Primary Down Trend throughout all reports in window <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Paradigm shift from financial assets to real assets; end of easy money era <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Nasdaq -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Nasdaq / Tech</span>
-        <span class="signal-badge signal-bearish">Bearish</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-trade"></div><span class="view-text">Short Nasdaq — active position <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">AI air pocket — capex cycle means fewer buybacks, less EPS support <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-trade"></div><span class="view-text">Short Nasdaq; deflationary AI disrupts legacy SaaS business models <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Deflationary AI disrupts legacy software; paradigm shift away from financial assets <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- India -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">India (INDA)</span>
-        <span class="signal-badge signal-bullish">Bullish (2 Analysts)</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bull st-trade"></div><span class="view-text">INDA 2.8 sigma cheap; bought — largest dislocation in 10 years <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">India to outperform in 2026; multi-year EM rotation <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Deep value — largest dislocation in 10 years <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- China / EM -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">China / EM Broad</span>
-        <span class="signal-badge signal-bullish">Bullish Lean</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">LatAm financials working <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Right-translated investor cycle (Wk 34 vs 22-26 normal) = highly bullish structure <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Multi-year EM rotation <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Primary Bull Trend intact <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Death of globalism → caution on China specifically; non-China EM may benefit <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ==================== BONDS TAB ==================== -->
-<div id="tab-bonds" class="tab-content">
-  <div class="grid">
-
-    <!-- US 10Y -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">US 10Y Yield</span>
-        <span class="signal-badge signal-bearish">Higher Yields</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Yields rising sharply since war; MOVE elevated <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Short 10Y + SOFR Z7 options <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">2nd inflation wave = higher yields; rate cuts were Burns mistake <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Short T-bonds; record small spec longs = crowded wrong <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-pos"></div><span class="view-text">Robot model marginally short bonds; oil shock + war precludes rate cuts <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Commodity bull = structurally higher long-end yields <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-pos"></div><span class="view-text">Bonds consistently underweight in model portfolio <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- T-Bonds Long End -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">T-Bonds (Long End / 30Y)</span>
-        <span class="signal-badge signal-bearish">Bearish</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-trade"></div><span class="view-text">Short T-bonds; record small spec longs = crowded wrong; curve steepener <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-pos"></div><span class="view-text">Consistently underweight across all reports <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Commodity bull = structurally higher yields; end of secular bond bull <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Credit -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Credit (HY / Private)</span>
-        <span class="signal-badge signal-bearish">Bearish</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">FCI tightening → credit conditions deteriorating <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-trade"></div><span class="view-text">Short credit — explicit portfolio position; AI private credit bust; 2001 telecom analogy <span class="new-badge">MAR 9</span> <span class="st-tag st-tag-trade">TRADE</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Private credit stress flagged; banks with NDFI exposure at risk <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">"Everything is a Bank" — systemic credit risk from AI capex misallocation <span class="new-badge">MAR 5</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TIPs -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">TIPs / Inflation-Protected</span>
-        <span class="signal-badge signal-neutral">Low Coverage</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Implied by stagflation thesis — inflation protection assets favored in pillar framework <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="no-data">Limited explicit analyst coverage. Inferred from inflation consensus.</div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ==================== FX & CRYPTO TAB ==================== -->
-<div id="tab-fx" class="tab-content">
-  <div class="grid">
-
-    <!-- DXY -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">US Dollar (DXY)</span>
-        <span class="signal-badge signal-mixed">Divergent &mdash; Timeframe Split</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bull st-view"></div><span class="view-text">Iran war + terms of trade shock = short-term dollar strength <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Commodity bull + deflationary AI = offsetting forces; no active position <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">"War on dollar" real but US capital markets + crypto re-dollarization = complex picture <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Dollar weakening cycle; Fed easing <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Bob Loukas</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Bearish duration / underweight in model <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Multi-year weakening cycle; structural dollar depreciation <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">"War on the dollar" is real narrative but US capital markets remain structural draw <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Bitcoin -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Bitcoin</span>
-        <span class="signal-badge signal-mixed">Divergent</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-st">ST</span><span class="tf-label">Days &ndash; Weeks</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">No model signal; 7.2% rich vs 80.2k FV <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Group A scarce asset; high-sentiment pricing fading; part of hard monies pillar <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-pos">POS</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bull st-pos"></div><span class="view-text">Scarce digital asset; part of hard monies structural thesis <span class="st-tag st-tag-pos">POS</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Bullish crypto payment rails / agentic wallets structurally; no BTC price call <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ==================== MACRO THEMES TAB ==================== -->
-<div id="tab-macro" class="tab-content">
-  <div class="grid">
-
-    <!-- Inflation -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Inflation Trajectory</span>
-        <span class="signal-badge signal-bearish">Strong Higher &#x2605;</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Stagflationary — war = worst-case for Fed dual mandate <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">2nd inflation wave worse than 1st; oil into broad prices <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">H2 net inflation risk — deflationary AI (services) + commodity bull (goods) <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Oil shock + supply chain fragmentation from Iran war <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Fiscal dominance; tariffs; multipolar world = persistent elevated inflation <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">1970s-style second inflation wave structural rhyme <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Commodity supercycle = persistent goods inflation despite AI deflation in services <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Death of globalism = supply chain fragmentation = structurally higher prices <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Fed Policy -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">Fed Policy</span>
-        <span class="signal-badge signal-mixed">Stuck / Hawkish Lean</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Stuck — stagflation = dual mandate simultaneously challenged <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Hawkish — rate cuts were 1970s Burns mistake; too loose <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Macro Ops</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Hawkish lean — stagflation + commodity bull implies cuts impossible <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Oil shock + inflation thesis implies cuts unlikely; war adds supply-side constraint <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Will provide liquidity if Treasury/overnight markets break, regardless of inflation <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Too loose; needs to tighten more like Volcker not Burns <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Fiscal dominance = eventually forced to print $2T+; structural constraint on policy independence <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- US Fiscal -->
-    <div class="card">
-      <div class="card-header">
-        <span class="card-title">US Fiscal Deficit</span>
-        <span class="signal-badge signal-bearish">Concern</span>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-mt">MT</span><span class="tf-label">Weeks &ndash; Months</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Danny Dayan</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Trump may use fiscal stimulus for midterms <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-lt">LT</span><span class="tf-label">Months &ndash; Years</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Nothing stops fiscal train; war accelerates it; Pentagon requesting $200B (Conv 5) <span class="new-badge">MAR 22</span> <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-      <div class="tf-section">
-        <div class="tf-section-header"><span class="tf-pill tf-pill-sec">SEC</span><span class="tf-label">Secular Regime</span></div>
-        <div class="analysts">
-          <div class="analyst-row"><span class="analyst-name">Lyn Alden</span><div class="analyst-view"><div class="dot dot-bear st-view"></div><span class="view-text">Triffin Dilemma + fiscal dominance = structural; unsolvable within current monetary framework <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-          <div class="analyst-row"><span class="analyst-name">A. Campbell</span><div class="analyst-view"><div class="dot dot-neutral st-view"></div><span class="view-text">Death of globalism implies rising defense spending = growing fiscal pressures <span class="st-tag st-tag-view">VIEW</span></span></div></div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ==================== MODEL PORTFOLIO TAB ==================== -->
-<div id="tab-portfolio" class="tab-content">
-
-  <div style="margin-bottom: 20px;">
-    <h2 style="font-size: 20px; font-weight: 600; color: #c9d1d9; margin-bottom: 4px;">Long-Term Model Portfolio</h2>
-    <p style="font-size: 13px; color: #6e7681;">Long-only, quarterly rebalance &middot; Derived from LT &amp; Secular consensus signals &middot; Q2 2026</p>
-  </div>
-
-  <!-- Summary Row -->
-  <div class="portfolio-summary">
-    <!-- Donut Chart -->
-    <div class="portfolio-chart">
-      <h3 style="font-size: 14px; color: #c9d1d9; margin-bottom: 16px; text-align: center;">Allocation Breakdown</h3>
-      <div class="port-ring" style="background: conic-gradient(
-        #3fb950 0deg 36deg,
-        #238636 36deg 61.2deg,
-        #2ea043 61.2deg 90deg,
-        #56d364 90deg 108deg,
-        #7ee787 108deg 118.8deg,
-        #aff5b4 118.8deg 129.6deg,
-        #58a6ff 129.6deg 144deg,
-        #79c0ff 144deg 154.8deg,
-        #d29922 154.8deg 172.8deg,
-        #484f58 172.8deg 360deg
-      );">
-        <div class="port-ring-center">
-          <span class="port-total">100%</span>
-          <span class="port-label">ALLOCATED</span>
-        </div>
-      </div>
-      <div class="port-legend">
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#3fb950"></span>Energy Producers 10%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#238636"></span>Broad Cmdty 7%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#2ea043"></span>Gold 8%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#56d364"></span>Short-Dur / TIPS 5%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#7ee787"></span>Uranium 3%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#aff5b4"></span>Agriculture 3%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#58a6ff"></span>India 4%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#79c0ff"></span>EM Broad 3%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#d29922"></span>Bitcoin 5%</div>
-        <div class="port-legend-item"><span class="port-legend-swatch" style="background:#484f58"></span>Cash / T-Bills 52%</div>
-      </div>
-    </div>
-
-    <!-- Stats Panel -->
-    <div class="portfolio-stats">
-      <h3 style="font-size: 14px; color: #c9d1d9; margin-bottom: 4px;">Portfolio Characteristics</h3>
-      <div class="port-stat">
-        <span class="port-stat-label">Rebalance Cadence</span>
-        <span class="port-stat-value">Quarterly</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">Next Rebalance</span>
-        <span class="port-stat-value">July 2026</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">Invested</span>
-        <span class="port-stat-value" style="color:#3fb950;">48%</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">Cash / Dry Powder</span>
-        <span class="port-stat-value" style="color:#d29922;">52%</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">Dominant Theme</span>
-        <span class="port-stat-value" style="color:#bc8cff;">Real Assets / Stagflation Hedge</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">Max Single Position</span>
-        <span class="port-stat-value">10% (Energy Producers)</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">US Equity Exposure</span>
-        <span class="port-stat-value" style="color:#f85149;">0% &mdash; avoided</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">Long Duration Bonds</span>
-        <span class="port-stat-value" style="color:#f85149;">0% &mdash; avoided</span>
-      </div>
-      <div class="port-stat">
-        <span class="port-stat-label">Strongest Consensus</span>
-        <span class="port-stat-value">5/5 Oil Bull, 4/5 Equity Avoid</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Why so much cash -->
-  <div style="background: #161b22; border: 1px solid #30363d; border-left: 3px solid #d29922; border-radius: 8px; padding: 14px 16px; margin-bottom: 24px;">
-    <div style="font-weight: 600; font-size: 13px; color: #d29922; margin-bottom: 6px;">Why 52% Cash?</div>
-    <div style="font-size: 12px; color: #8b949e; line-height: 1.6;">
-      The analyst consensus is overwhelmingly bearish on US equities (4/5), long-duration bonds (3/5), and credit (3/5) &mdash; which together make up the bulk of most portfolios. Rather than shorting these (unsuitable for a quarterly-rebalance framework), the portfolio simply avoids them. The high cash position also creates optionality to deploy into watchlist setups (sugar, corn, silver, gold adds) as they trigger at future rebalance dates.
-    </div>
-  </div>
-
-  <!-- Allocation Table -->
-  <table class="port-table">
-    <thead>
-      <tr>
-        <th>Asset / Vehicle</th>
-        <th style="text-align:center">Weight</th>
-        <th style="min-width:80px"></th>
-        <th style="text-align:center">Conviction</th>
-        <th>Analysts</th>
-        <th>LT / Secular Thesis</th>
-      </tr>
-    </thead>
+<div class="summary-section" style="margin-top:24px; margin-bottom:40px;">
+  <h2>Analyst Coverage</h2>
+  <table class="agree-table">
+    <thead><tr><th>Analyst</th><th>Focus</th><th>Calls Logged</th><th>Latest Report</th><th>Cadence</th></tr></thead>
     <tbody>
-      <!-- Core Commodity Positions -->
-      <tr class="group-header"><td colspan="6">Core &mdash; Commodities &amp; Real Assets (33%)</td></tr>
       <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Energy Producers (GUNR / XOP)</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">10%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:67%; background:#3fb950;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">L D M A B</td>
-        <td style="font-size:11px; color:#8b949e;">5/5 unanimous oil bull across all timeframes; Lyn at 34% GUNR; Macro Ops #1 RS thematic; secular supercycle</td>
+        <td><b>Lyn Alden</b></td>
+        <td>Fundamental macro, fiscal/monetary, long-term positioning</td>
+        <td>59</td>
+        <td>Mar 25, 2026 (routine check &mdash; no new content; next premium report ~Mar 29)</td>
+        <td>Biweekly premium reports + ~6-week free newsletters</td>
       </tr>
       <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Broad Commodity Index (DJP / GSG)</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">7%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:47%; background:#3fb950;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">L M B</td>
-        <td style="font-size:11px; color:#8b949e;">Pillar 2 position (Lyn); commodity supercycle secular thesis (Macro Ops); model portfolio allocation (Bob)</td>
+        <td><b>Danny Dayan</b></td>
+        <td>Quantitative macro, FCI models, short-term trading signals</td>
+        <td>57</td>
+        <td>Mar 25, 2026 &mdash; <i>Crypto Update Reversion</i> (ETH bearish, BTC neutral maintained)</td>
+        <td>Multiple posts per week</td>
       </tr>
       <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Gold (GLD / Physical)</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">8%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:53%; background:#d29922;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">L A</td>
-        <td style="font-size:11px; color:#8b949e;">Secular hard money pillar (Lyn); reserve currency erosion hedge (Campbell Conv 5/5). ST/MT headwinds (Bob Bear) but quarterly cadence rides through</td>
+        <td><b>Macro Ops</b></td>
+        <td>Global macro, commodities supercycle, technical analysis (Trifecta Lens), geopolitics</td>
+        <td>27</td>
+        <td>Mar 23, 2026 &mdash; <i>NO SAFEHAVENS</i></td>
+        <td>Multiple pieces per week + monthly thematic inflection reports</td>
       </tr>
       <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Short-Duration Bonds / TIPS</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">5%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:33%; background:#56d364;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">D M B</td>
-        <td style="font-size:11px; color:#8b949e;">Inflation protection without long-duration risk. Consensus is higher yields (avoid long end) but real rates still attractive at the short end</td>
+        <td><b>Alexander Campbell</b></td>
+        <td>Macro + geopolitics, AI/tech disruption, credit markets, reserve currency dynamics</td>
+        <td>63</td>
+        <td>Mar 24, 2026 &mdash; <i>Systems 101: Overconfidence</i> (bulk archive processed Mar 25)</td>
+        <td>Multiple times per month (event-driven, Campbell Ramble)</td>
       </tr>
       <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Uranium / Nuclear (URNM / URA)</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">3%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:20%; background:#7ee787;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">L</td>
-        <td style="font-size:11px; color:#8b949e;">Breakout durable; AI power demand structural beneficiary; nuclear renaissance. Single-analyst conviction but high-quality secular thesis</td>
-      </tr>
-
-      <!-- Satellite Positions -->
-      <tr class="group-header"><td colspan="6">Satellite &mdash; Emerging Themes (3%)</td></tr>
-      <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Agriculture (Wheat / DBA)</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">3%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:20%; background:#aff5b4;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">M</td>
-        <td style="font-size:11px; color:#8b949e;">Next phase of commodity supercycle; KC HRW wheat long; emerging conviction. Small sizing reflects single-analyst coverage</td>
-      </tr>
-
-      <!-- International Equities -->
-      <tr class="group-header"><td colspan="6">International Equities (7%)</td></tr>
-      <tr>
-        <td style="font-weight:500; color:#c9d1d9;">India (INDA)</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">4%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:27%; background:#58a6ff;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">L D</td>
-        <td style="font-size:11px; color:#8b949e;">2.8&sigma; cheap (Dayan); largest dislocation in 10y. Structural multi-year allocation outside US</td>
-      </tr>
-      <tr>
-        <td style="font-weight:500; color:#c9d1d9;">EM Broad / China (VWO / FXI)</td>
-        <td style="text-align:center; font-weight:600; color:#3fb950;">3%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:20%; background:#79c0ff;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">L B</td>
-        <td style="font-size:11px; color:#8b949e;">Multi-year EM rotation (Lyn); primary Bull intact (Bob). Capped at 3% due to Campbell caution on China globalism risk</td>
-      </tr>
-
-      <!-- Digital Assets -->
-      <tr class="group-header"><td colspan="6">Digital Assets (5%)</td></tr>
-      <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Bitcoin (BTC / IBIT)</td>
-        <td style="text-align:center; font-weight:600; color:#d29922;">5%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:33%; background:#d29922;"></div></div></td>
-        <td style="text-align:center"><div class="conviction-dots"><span class="conviction-dot filled"></span><span class="conviction-dot filled"></span><span class="conviction-dot"></span><span class="conviction-dot"></span><span class="conviction-dot"></span></div></td>
-        <td style="font-size:11px; color:#8b949e;">L A</td>
-        <td style="font-size:11px; color:#8b949e;">Group A scarce asset (Lyn); protocol-level conviction. Secular dollar-debasement hedge. Capped at 5% due to volatility</td>
-      </tr>
-
-      <!-- Cash -->
-      <tr class="group-header"><td colspan="6">Cash &amp; Dry Powder (52%)</td></tr>
-      <tr>
-        <td style="font-weight:500; color:#c9d1d9;">Cash / T-Bills (SHV / BIL)</td>
-        <td style="text-align:center; font-weight:600; color:#8b949e;">52%</td>
-        <td><div class="weight-bar"><div class="weight-fill" style="width:100%; background:#484f58;"></div></div></td>
-        <td style="text-align:center">&mdash;</td>
-        <td style="font-size:11px; color:#8b949e;">&mdash;</td>
-        <td style="font-size:11px; color:#8b949e;">4/5 analysts bearish US equities + bonds; dry powder for watchlist entries at future rebalance dates. T-Bill yield provides &gt;4% carry while waiting</td>
+        <td><b>Bob Loukas</b></td>
+        <td>Market cycle analysis (Cycles methodology), Gold, Equities, Bitcoin, FX, Crude Oil</td>
+        <td>13</td>
+        <td>Mar 25, 2026 (routine check &mdash; no new content since Mar 21 <i>Clarity in Cycles</i>)</td>
+        <td>Weekly premium reports + ad hoc video updates</td>
       </tr>
     </tbody>
   </table>
-
-  <!-- Rebalance Triggers -->
-  <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9;">Watchlist &mdash; Candidates for Q3 Rebalance</h2>
-  <p style="font-size: 12px; color: #6e7681; margin-bottom: 14px;">Setups that could trigger cash deployment at the July 2026 rebalance. Potential allocation from the 52% cash reserve.</p>
-
-  <div class="watchlist-card">
-    <div class="wl-title">Sugar &mdash; Double Bottom Watch</div>
-    <div class="wl-detail">Macro Ops watching for confirmed double bottom. If RS breakout confirms by Q3, add 2-3% from cash.</div>
-  </div>
-  <div class="watchlist-card">
-    <div class="wl-title">Corn &mdash; Pre-Breakout</div>
-    <div class="wl-detail">On Macro Ops watchlist alongside wheat agriculture theme. If agriculture broad conviction strengthens, increase ag allocation to 5% total.</div>
-  </div>
-  <div class="watchlist-card">
-    <div class="wl-title">Silver &mdash; Structural Bull Candidate</div>
-    <div class="wl-detail">Campbell LT bullish ("Silver Moon"). If a second analyst adds coverage or Bob Loukas weekly trend turns, initiate 2-3% position.</div>
-  </div>
-  <div class="watchlist-card">
-    <div class="wl-title">Gold &mdash; Increase on Washout</div>
-    <div class="wl-detail">If Bob Loukas weekly Bear trend resolves (daily cycle bottom + sentiment washout), increase from 8% to 12% for full secular weighting.</div>
-  </div>
-  <div class="watchlist-card">
-    <div class="wl-title">Industrial Metals &mdash; Awaiting Second Analyst</div>
-    <div class="wl-detail">Macro Ops bullish (Conv 4, RS improving) but single-analyst coverage. If Lyn Alden or Campbell add a structural call, initiate 2-3% position.</div>
-  </div>
-  <div class="watchlist-card">
-    <div class="wl-title">US Equities &mdash; Not Until Cycle Turns</div>
-    <div class="wl-detail">Consensus is 4/5 bearish. Re-evaluate only when Bob Loukas investor cycle matures (currently Wk 7 of ~40) or Campbell turns constructive. Could be a late-2026 event.</div>
-  </div>
-
-  <!-- Positions Not Taken -->
-  <div style="margin-top: 24px; margin-bottom: 24px;">
-    <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9;">Positions Explicitly Avoided</h2>
-    <table class="port-table">
-      <thead>
-        <tr>
-          <th>Asset</th>
-          <th>Consensus</th>
-          <th>Why Excluded</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="font-weight:500; color:#c9d1d9;">S&amp;P 500 / Nasdaq</td>
-          <td><span class="signal-badge signal-bearish" style="font-size:10px">4/5 Bearish</span></td>
-          <td style="font-size:11px; color:#8b949e;">Investor cycle Wk 7 of ~40; dot-com valuations; FINRA margin ATH. Expressed as cash rather than short.</td>
-        </tr>
-        <tr>
-          <td style="font-weight:500; color:#c9d1d9;">Long-Duration Bonds (TLT)</td>
-          <td><span class="signal-badge signal-bearish" style="font-size:10px">3/5 Bearish</span></td>
-          <td style="font-size:11px; color:#8b949e;">Commodity bull = structurally higher long yields; record spec longs wrong. Short-duration TIPS used instead.</td>
-        </tr>
-        <tr>
-          <td style="font-weight:500; color:#c9d1d9;">Credit (HY / Private)</td>
-          <td><span class="signal-badge signal-bearish" style="font-size:10px">3/5 Bearish</span></td>
-          <td style="font-size:11px; color:#8b949e;">AI private credit bust risk (Campbell 2001 analogy); FCI tightening (Dayan). Zero exposure.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Methodology -->
-  <div class="port-method">
-    <h3>Methodology &amp; Notes</h3>
-    <p><b>Framework:</b> This is a long-only, quarterly-rebalance portfolio. No shorts, no leverage, no tactical trades. Positions are sized for a minimum 3-month hold period and evaluated only at rebalance dates.</p>
-    <p style="margin-top: 8px;"><b>Weight derivation:</b> Only LT and Secular timeframe signals are used for sizing. Assets with multi-analyst agreement receive higher weights (max 10%). Single-analyst themes are capped at 3-5%. ST/MT signals inform watchlist timing, not current allocation.</p>
-    <p style="margin-top: 8px;"><b>Conviction scale:</b> Each filled dot = 1 analyst with an active LT or Secular bullish call. 5 dots = unanimous agreement across all tracked analysts.</p>
-    <p style="margin-top: 8px;"><b>Cash strategy:</b> 52% cash is a feature, not a bug. When 4/5 analysts say avoid equities and 3/5 say avoid bonds, the opportunity cost of cash is low and the optionality value is high. T-Bills provide &gt;4% carry. Cash will be deployed gradually as watchlist setups trigger at future rebalance dates.</p>
-    <p style="margin-top: 8px;"><b>Disclaimer:</b> This is a signal-synthesis exercise, not investment advice. Positions reflect aggregated analyst views and do not account for individual risk tolerance, portfolio constraints, or transaction costs.</p>
-  </div>
-
 </div>
-
-<!-- Keys -->
-<div style="max-width: 1600px; margin: 32px auto 0;">
-  <h2 style="font-size: 18px; font-weight: 600; margin-bottom: 12px; color: #c9d1d9;">Key</h2>
-
-  <!-- Analyst Initials Key (used in Overview matrix) -->
-  <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
-    <div style="display: flex; align-items: center; gap: 6px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px;">
-      <span class="adot adot-neutral" style="width:14px;height:14px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">L</span>
-      <span style="font-size: 12px; color: #8b949e;">Lyn Alden</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px;">
-      <span class="adot adot-neutral" style="width:14px;height:14px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">D</span>
-      <span style="font-size: 12px; color: #8b949e;">Danny Dayan</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px;">
-      <span class="adot adot-neutral" style="width:14px;height:14px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">M</span>
-      <span style="font-size: 12px; color: #8b949e;">Macro Ops</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px;">
-      <span class="adot adot-neutral" style="width:14px;height:14px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">A</span>
-      <span style="font-size: 12px; color: #8b949e;">Alex Campbell</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px;">
-      <span class="adot adot-neutral" style="width:14px;height:14px;border-radius:3px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;">B</span>
-      <span style="font-size: 12px; color: #8b949e;">Bob Loukas</span>
-    </div>
-  </div>
-
-  <!-- Signal Type Key -->
-  <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 20px;">
-    <div style="display: flex; align-items: center; gap: 10px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <div style="width: 8px; height: 8px; border-radius: 50; border: 2px solid #3fb950; background: transparent;"></div>
-        <span class="st-tag st-tag-view">VIEW</span>
-      </div>
-      <span style="font-size: 12px; color: #8b949e;"><b>View</b> &mdash; directional opinion or framework. No specific trade.</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 10px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <div style="width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(to top, #3fb950 50%, transparent 50%); border: 2px solid #3fb950;"></div>
-        <span class="st-tag st-tag-pos">POS</span>
-      </div>
-      <span style="font-size: 12px; color: #8b949e;"><b>Position</b> &mdash; allocated / holding in portfolio or model. Not a timed entry.</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 10px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <div style="display: flex; align-items: center; gap: 6px;">
-        <div style="width: 8px; height: 8px; border-radius: 50%; background: #3fb950; border: 2px solid #3fb950;"></div>
-        <span class="st-tag st-tag-trade">TRADE</span>
-      </div>
-      <span style="font-size: 12px; color: #8b949e;"><b>Trade</b> &mdash; explicit buy/sell/short with a specific instrument or setup.</span>
-    </div>
-  </div>
-
-  <!-- Direction Key -->
-  <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 20px;">
-    <div style="display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <div style="width: 8px; height: 8px; border-radius: 50%; background: #3fb950;"></div>
-      <span style="font-size: 12px; color: #8b949e;"><b>Bullish</b></span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <div style="width: 8px; height: 8px; border-radius: 50%; background: #f85149;"></div>
-      <span style="font-size: 12px; color: #8b949e;"><b>Bearish</b></span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <div style="width: 8px; height: 8px; border-radius: 50%; background: #6e7681;"></div>
-      <span style="font-size: 12px; color: #8b949e;"><b>Neutral / No Call</b></span>
-    </div>
-  </div>
-
-  <!-- Timeframe Key -->
-  <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 40px;">
-    <div style="display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <span class="tf-pill tf-pill-st">ST</span>
-      <span style="font-size: 12px; color: #8b949e;"><b>Short-Term</b> &mdash; days to weeks</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <span class="tf-pill tf-pill-mt">MT</span>
-      <span style="font-size: 12px; color: #8b949e;"><b>Medium-Term</b> &mdash; weeks to months</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <span class="tf-pill tf-pill-lt">LT</span>
-      <span style="font-size: 12px; color: #8b949e;"><b>Long-Term</b> &mdash; months to years</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px; background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 10px 14px;">
-      <span class="tf-pill tf-pill-sec">SEC</span>
-      <span style="font-size: 12px; color: #8b949e;"><b>Secular</b> &mdash; multi-year regime</span>
-    </div>
-  </div>
-</div>
-
-<script>
-function switchTab(tabId) {
-  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.getElementById('tab-' + tabId).classList.add('active');
-  // Find the matching tab button
-  const tabs = document.querySelectorAll('.tab');
-  const tabMap = { overview: 0, commodities: 1, equities: 2, bonds: 3, fx: 4, macro: 5, portfolio: 6 };
-  if (tabMap[tabId] !== undefined) tabs[tabMap[tabId]].classList.add('active');
-}
-</script>
-
 </body>
 </html>
