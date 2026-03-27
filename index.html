@@ -209,7 +209,8 @@
 
 <!-- Tabs -->
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('overview')">Overview</div>
+  <div class="tab active" onclick="switchTab('changes')">Signal Changes</div>
+  <div class="tab" onclick="switchTab('matrix')">Matrix</div>
   <div class="tab" onclick="switchTab('commodities')">Commodities</div>
   <div class="tab" onclick="switchTab('equities')">Equities</div>
   <div class="tab" onclick="switchTab('bonds')">Bonds &amp; Credit</div>
@@ -218,8 +219,8 @@
   <div class="tab" onclick="switchTab('portfolio')">Model Portfolio</div>
 </div>
 
-<!-- ==================== OVERVIEW TAB ==================== -->
-<div id="tab-overview" class="tab-content active">
+<!-- ==================== SIGNAL CHANGES TAB ==================== -->
+<div id="tab-changes" class="tab-content active">
 
   <!-- Recent Signal Changes -->
   <div class="recent-changes">
@@ -477,6 +478,11 @@
     </div>
 
   </div>
+
+</div>
+
+<!-- ==================== MATRIX TAB ==================== -->
+<div id="tab-matrix" class="tab-content">
 
   <!-- Cross-Asset Timeframe Matrix -->
   <table class="matrix-table">
@@ -2127,7 +2133,7 @@ function switchTab(tabId) {
   document.getElementById('tab-' + tabId).classList.add('active');
   // Find the matching tab button
   const tabs = document.querySelectorAll('.tab');
-  const tabMap = { overview: 0, commodities: 1, equities: 2, bonds: 3, fx: 4, macro: 5, portfolio: 6 };
+  const tabMap = { changes: 0, matrix: 1, commodities: 2, equities: 3, bonds: 4, fx: 5, macro: 6, portfolio: 7 };
   if (tabMap[tabId] !== undefined) tabs[tabMap[tabId]].classList.add('active');
 }
 </script>
